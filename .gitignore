@@ -1,0 +1,26 @@
+# Environment variables and secrets
+.env
+.env.local
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+
+# Docker & Database volumes
+pgdata/
+
+# IDE configurations
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# AI agents and skills customizations
+.agents/

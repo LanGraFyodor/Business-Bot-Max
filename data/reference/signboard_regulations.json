@@ -1,0 +1,54 @@
+﻿[
+    {
+        "id":  1,
+        "region_code":  "16",
+        "city":  "Казань",
+        "authority_name":  "Управление архитектуры и градостроительства ИК МО г. Казани",
+        "legal_act_title":  "Решение Казанской городской Думы от 18.10.2006 № 21-13 (Правила благоустройства Казани)",
+        "max_sign_height_meters":  0.5,
+        "max_sign_width_percent_of_facade":  70,
+        "requires_special_permit":  false,
+        "required_documents":  [
+                                   "Фотофиксация фасада до монтажа",
+                                   "Дизайн-проект вывески",
+                                   "Документ на право пользования помещением"
+                               ],
+        "processing_time_days":  15,
+        "official_portal_url":  "https://kzn.ru/prinyatie-resheniy/uslugi/soglasovanie-vyvesok/",
+        "is_mocked_data":  true
+    },
+    {
+        "id":  2,
+        "region_code":  "77",
+        "city":  "Москва",
+        "authority_name":  "Комитет по архитектуре и градостроительству г. Москвы (Москомархитектура)",
+        "legal_act_title":  "Постановление Правительства Москвы от 25.12.2013 № 902-ПП",
+        "max_sign_height_meters":  0.5,
+        "max_sign_width_percent_of_facade":  70,
+        "requires_special_permit":  false,
+        "required_documents":  [
+                                   "Не требуются при соблюдении типовых параметров Правил размещения"
+                               ],
+        "processing_time_days":  0,
+        "official_portal_url":  "https://www.mos.ru/mka/function/napravleniya-deyatelnosti/razmeshchenie-vyvesok/",
+        "is_mocked_data":  false
+    },
+    {
+        "id":  3,
+        "region_code":  "78",
+        "city":  "Санкт-Петербург",
+        "authority_name":  "Комитет по печати и взаимодействию со СМИ Санкт-Петербурга",
+        "legal_act_title":  "Постановление Правительства Санкт-Петербурга от 20.09.2012 № 1002",
+        "max_sign_height_meters":  0.62,
+        "max_sign_width_percent_of_facade":  80,
+        "requires_special_permit":  true,
+        "required_documents":  [
+                                   "Заявление на выдачу разрешения",
+                                   "Лист согласования КГА",
+                                   "Согласие собственников МКД"
+                               ],
+        "processing_time_days":  30,
+        "official_portal_url":  "https://gu.spb.ru/187979/eservice/",
+        "is_mocked_data":  true
+    }
+]
