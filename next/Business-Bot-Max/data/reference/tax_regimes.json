@@ -1,0 +1,140 @@
+﻿[
+    {
+        "code":  "npd",
+        "name":  "Налог на профессиональный доход",
+        "short_name":  "НПД (Самозанятость)",
+        "description":  "Специальный налоговый режим для самозанятых граждан и ИП без наемных сотрудников с годовым доходом до 2.4 млн руб.",
+        "allowed_legal_forms":  [
+                                    "self_employed"
+                                ],
+        "max_annual_revenue":  2400000,
+        "max_employees":  0,
+        "base_tax_rate_percent":  4,
+        "has_regional_discounts":  false,
+        "fixed_insurance_required":  false,
+        "fixed_insurance_amount_annual":  0,
+        "reporting_frequency":  "none",
+        "kkt_required_by_default":  false,
+        "legal_source_id":  "fz_422_npd",
+        "effective_year":  2026
+    },
+    {
+        "code":  "usn_income",
+        "name":  "Упрощенная система налогообложения (Доходы)",
+        "short_name":  "УСН 6%",
+        "description":  "Налог со всей полученной выручки по ставке 6%. Выгодно при низких подтвержденных расходах (услуги, IT, консалтинг, аренда).",
+        "allowed_legal_forms":  [
+                                    "ip",
+                                    "ooo"
+                                ],
+        "max_annual_revenue":  450000000,
+        "max_employees":  130,
+        "base_tax_rate_percent":  6,
+        "has_regional_discounts":  true,
+        "fixed_insurance_required":  true,
+        "fixed_insurance_amount_annual":  53658,
+        "reporting_frequency":  "annual",
+        "kkt_required_by_default":  true,
+        "legal_source_id":  "nk_rf_usn",
+        "effective_year":  2026
+    },
+    {
+        "code":  "usn_income_expense",
+        "name":  "Упрощенная система налогообложения (Доходы минус расходы)",
+        "short_name":  "УСН 15%",
+        "description":  "Налог с чистой прибыли (доходы минус документально подтвержденные расходы). Выгодно при доле расходов свыше 60-70% (розница, общепит, производство).",
+        "allowed_legal_forms":  [
+                                    "ip",
+                                    "ooo"
+                                ],
+        "max_annual_revenue":  450000000,
+        "max_employees":  130,
+        "base_tax_rate_percent":  15,
+        "has_regional_discounts":  true,
+        "fixed_insurance_required":  true,
+        "fixed_insurance_amount_annual":  53658,
+        "reporting_frequency":  "annual",
+        "kkt_required_by_default":  true,
+        "legal_source_id":  "nk_rf_usn",
+        "effective_year":  2026
+    },
+    {
+        "code":  "ausn_income",
+        "name":  "Автоматизированная УСН (Доходы)",
+        "short_name":  "АУСН 8%",
+        "description":  "Экспериментальный режим: налог 8%, полное освобождение от налоговых деклараций и страховых взносов, расчет налога банком.",
+        "allowed_legal_forms":  [
+                                    "ip",
+                                    "ooo"
+                                ],
+        "max_annual_revenue":  60000000,
+        "max_employees":  5,
+        "base_tax_rate_percent":  8,
+        "has_regional_discounts":  false,
+        "fixed_insurance_required":  false,
+        "fixed_insurance_amount_annual":  0,
+        "reporting_frequency":  "none",
+        "kkt_required_by_default":  true,
+        "legal_source_id":  "nk_rf_usn",
+        "effective_year":  2026
+    },
+    {
+        "code":  "ausn_income_expense",
+        "name":  "Автоматизированная УСН (Доходы минус расходы)",
+        "short_name":  "АУСН 20%",
+        "description":  "Налог 20% с разницы доходов и расходов, без отчетности и без взносов. Расходы подтверждаются безналично через расчетный счет.",
+        "allowed_legal_forms":  [
+                                    "ip",
+                                    "ooo"
+                                ],
+        "max_annual_revenue":  60000000,
+        "max_employees":  5,
+        "base_tax_rate_percent":  20,
+        "has_regional_discounts":  false,
+        "fixed_insurance_required":  false,
+        "fixed_insurance_amount_annual":  0,
+        "reporting_frequency":  "none",
+        "kkt_required_by_default":  true,
+        "legal_source_id":  "nk_rf_usn",
+        "effective_year":  2026
+    },
+    {
+        "code":  "patent",
+        "name":  "Патентная система налогообложения",
+        "short_name":  "ПСН (Патент)",
+        "description":  "Фиксированная стоимость патента, рассчитываемая от потенциального дохода региона. Без сдачи деклараций, только для ИП.",
+        "allowed_legal_forms":  [
+                                    "ip"
+                                ],
+        "max_annual_revenue":  60000000,
+        "max_employees":  15,
+        "base_tax_rate_percent":  6,
+        "has_regional_discounts":  false,
+        "fixed_insurance_required":  true,
+        "fixed_insurance_amount_annual":  53658,
+        "reporting_frequency":  "none",
+        "kkt_required_by_default":  true,
+        "legal_source_id":  "nk_rf_usn",
+        "effective_year":  2026
+    },
+    {
+        "code":  "osno",
+        "name":  "Общая система налогообложения",
+        "short_name":  "ОСНО",
+        "description":  "Классическая система налогообложения с уплатой НДС 20% и налога на прибыль 20-25% (или НДФЛ 13-15% для ИП).",
+        "allowed_legal_forms":  [
+                                    "ip",
+                                    "ooo"
+                                ],
+        "max_annual_revenue":  999999999999,
+        "max_employees":  99999,
+        "base_tax_rate_percent":  20,
+        "has_regional_discounts":  false,
+        "fixed_insurance_required":  true,
+        "fixed_insurance_amount_annual":  53658,
+        "reporting_frequency":  "quarterly",
+        "kkt_required_by_default":  true,
+        "legal_source_id":  "nk_rf_usn",
+        "effective_year":  2026
+    }
+]

@@ -1,0 +1,128 @@
+[
+    {
+        "id":  "fz_422_npd",
+        "name":  "Федеральный закон от 27.11.2018 N 422-ФЗ \u0027О специальном налоговом режиме Налог на профессиональный доход\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102488887",
+        "publisher":  "ФНС России / Президент РФ",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2026-08-04",
+        "status":  "active"
+    },
+    {
+        "id":  "nk_rf_usn",
+        "name":  "Налоговый кодекс РФ, Глава 26.2 \u0027Упрощенная система налогообложения (УСН)\u0027",
+        "official_url":  "https://www.nalog.gov.ru/rn77/taxation/taxes/usn/",
+        "publisher":  "ФНС России / Минфин РФ",
+        "source_type":  "code_rf",
+        "last_verified_at":  "2026-01-01",
+        "status":  "active"
+    },
+    {
+        "id":  "nk_rf_430",
+        "name":  "Налоговый кодекс РФ, Статья 430 \u0027Размер страховых взносов, уплачиваемых ИП за себя\u0027",
+        "official_url":  "https://www.nalog.gov.ru/rn77/taxation/taxes/strah/",
+        "publisher":  "ФНС России / Социальный фонд России",
+        "source_type":  "code_rf",
+        "last_verified_at":  "2026-01-01",
+        "status":  "active"
+    },
+    {
+        "id":  "fz_129_reg",
+        "name":  "Федеральный закон от 08.08.2001 N 129-ФЗ \u0027О государственной регистрации юридических лиц и ИП\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102072483",
+        "publisher":  "ФНС России",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2026-08-04",
+        "status":  "active"
+    },
+    {
+        "id":  "fz_54_kkt",
+        "name":  "Федеральный закон от 22.05.2003 N 54-ФЗ \u0027О применении ККТ при осуществлении расчетов в РФ\u0027",
+        "official_url":  "https://www.nalog.gov.ru/rn77/related_activities/kkt/",
+        "publisher":  "ФНС России",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2025-06-24",
+        "status":  "active"
+    },
+    {
+        "id":  "law_2300_1_zozpp",
+        "name":  "Закон РФ от 07.02.1992 N 2300-1 \u0027О защите прав потребителей\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102014512",
+        "publisher":  "Роспотребнадзор",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2026-09-01",
+        "status":  "active"
+    },
+    {
+        "id":  "pp_2463_rules",
+        "name":  "Постановление Правительства РФ от 31.12.2020 N 2463 \u0027Правила продажи товаров по договору розничной купли-продажи\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102928373",
+        "publisher":  "Правительство РФ",
+        "source_type":  "gov_decree",
+        "last_verified_at":  "2026-05-30",
+        "status":  "active"
+    },
+    {
+        "id":  "fz_152_pdn",
+        "name":  "Федеральный закон от 27.07.2006 N 152-ФЗ \u0027О персональных данных\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102108261",
+        "publisher":  "Роскомнадзор",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2026-07-26",
+        "status":  "active"
+    },
+    {
+        "id":  "rasp_792_marking",
+        "name":  "Распоряжение Правительства РФ от 28.04.2018 N 792-р \u0027Перечень товаров, подлежащих обязательной маркировке Честный ЗНАК\u0027",
+        "official_url":  "https://честныйзнак.рф",
+        "publisher":  "Правительство РФ / Минпромторг",
+        "source_type":  "gov_decree",
+        "last_verified_at":  "2026-04-27",
+        "status":  "active"
+    },
+    {
+        "id":  "pp_moscow_902_signs",
+        "name":  "Постановление Правительства Москвы от 25.12.2013 N 902-ПП \u0027О размещении информационных конструкций в городе Москве\u0027",
+        "official_url":  "https://www.mos.ru/authority/documents/doc/31818220/",
+        "publisher":  "Правительство Москвы",
+        "source_type":  "municipal_act",
+        "last_verified_at":  "2026-01-01",
+        "status":  "active"
+    },
+    {
+        "id":  "fz_176_tax_reform",
+        "name":  "Федеральный закон от 12.07.2024 N 176-ФЗ \u0027О налоговой реформе (НДС на УСН)\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=604085449",
+        "publisher":  "Госдума / Президент РФ",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2025-11-28",
+        "status":  "active"
+    },
+    {
+        "id":  "fz_248_control",
+        "name":  "Федеральный закон от 31.07.2020 N 248-ФЗ \u0027О государственном контроле и приложении Инспектор\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102766324",
+        "publisher":  "Минэкономразвития России",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2026-08-04",
+        "status":  "active"
+    },
+    {
+        "id":  "minek_142_grants",
+        "name":  "Приказ Минэкономразвития России от 26.03.2021 N 142 \u0027Гранты молодым предпринимателям до 25 лет\u0027",
+        "official_url":  "https://economy.gov.ru",
+        "publisher":  "Минэкономразвития России",
+        "source_type":  "decree",
+        "last_verified_at":  "2024-05-20",
+        "status":  "active"
+    },
+    {
+        "id":  "fz_178_social_contract",
+        "name":  "Федеральный закон от 17.07.1999 N 178-ФЗ \u0027О государственной социальной помощи (Соцконтракт)\u0027",
+        "official_url":  "http://pravo.gov.ru/proxy/ips/?docbody=\u0026nd=102060601",
+        "publisher":  "Минтруд России",
+        "source_type":  "federal_law",
+        "last_verified_at":  "2026-07-26",
+        "status":  "active"
+    }
+]
