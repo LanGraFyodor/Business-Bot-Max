@@ -1,26 +1,15 @@
-# Environment variables and secrets
 .env
-.env.local
+data/
+web/node_modules/
+web/dist/
+*.exe
+tmp/
+artifacts/
 
-# Virtual environments
-.venv/
-venv/
-env/
+**/*.tsbuildinfo
 
-# Python cache
-__pycache__/
-*.py[cod]
-*$py.class
-*.log
+*.private.md
 
-# Docker & Database volumes
-pgdata/
-
-# IDE configurations
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# AI agents and skills customizations
-.agents/
+.env.*
+!.env.example
+output/

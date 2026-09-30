@@ -1,38 +1,54 @@
-services:
-  db:
-    image: postgres:15-alpine
-    container_name: max_business_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-max_business}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_secret_password}
+﻿services:
+  docspace:
+    build: .
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${DOCSPACE_PORT:-8080}:8080"
+    environment:
+      DEMO_MODE: ${DEMO_MODE:-true}
+      LISTEN_ADDR: 0.0.0.0:8080
+      MAX_BOT_TOKEN: ${MAX_BOT_TOKEN:-}
+      MAX_MANAGER_IDS: ${MAX_MANAGER_IDS:-}
+      MAX_MEMBER_IDS: ${MAX_MEMBER_IDS:-}
+      PUBLIC_APP_URL: ${PUBLIC_APP_URL:-}
+      MAX_CA_FILE: certs/russian_trusted_root_ca.crt
+      BOT_MODE: ${BOT_MODE:-off}
+      MAX_WEBHOOK_SECRET: ${MAX_WEBHOOK_SECRET:-}
+      MAX_API_URL: ${MAX_API_URL:-https://platform-api2.max.ru}
     volumes:
-      - pgdata:/var/lib/postgresql/data
-      # Автоматическое выполнение миграций при первом запуске контейнера:
-      - ./data/migrations:/docker-entrypoint-initdb.d:ro
+      - docspace_data:/app/data
+    restart: unless-stopped
+  reference_db:
+    profiles: [reference-data]
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${REFERENCE_DB_NAME:-max_business}
+      POSTGRES_USER: ${REFERENCE_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${REFERENCE_DB_PASSWORD:-local-reference-only}
+    ports:
+      - "127.0.0.1:${REFERENCE_DB_PORT:-5433}:5432"
+    volumes:
+      - reference_pgdata:/var/lib/postgresql/data
+      - ./next/Business-Bot-Max/data/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-max_business}"]
+      test: ["CMD-SHELL", "pg_isready -U ${REFERENCE_DB_USER:-postgres} -d ${REFERENCE_DB_NAME:-max_business}"]
       interval: 5s
       timeout: 5s
       retries: 5
-
-  etl:
+  reference_etl:
+    profiles: [reference-data]
     build:
-      context: .
+      context: ./next/Business-Bot-Max
       dockerfile: etl/Dockerfile
-    container_name: max_business_etl
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_secret_password}@db:5432/${POSTGRES_DB:-max_business}
+      DATABASE_URL: postgresql://${REFERENCE_DB_USER:-postgres}:${REFERENCE_DB_PASSWORD:-local-reference-only}@reference_db:5432/${REFERENCE_DB_NAME:-max_business}
     depends_on:
-      db:
+      reference_db:
         condition: service_healthy
     volumes:
-      - ./data:/app/data:ro
-      - ./etl:/app/etl:ro
-
+      - ./next/Business-Bot-Max/data:/app/data:ro
+      - ./next/Business-Bot-Max/etl:/app/etl:ro
+    restart: "no"
 volumes:
-  pgdata:
-    driver: local
+  docspace_data:
+  reference_pgdata:
+

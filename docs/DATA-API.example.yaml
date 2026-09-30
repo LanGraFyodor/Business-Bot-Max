@@ -1,0 +1,23 @@
+# Template only: fill in the real HTTPS endpoint before hackathon submission.
+# Never include MAX_BOT_TOKEN or production secrets.
+name: Docspace
+description: Командная работа с документами в MAX
+openapi: ./openapi.yaml
+base_url: https://REPLACE-WITH-PUBLIC-HOST
+bot:
+  username: t68_hakaton_max_bot
+  id: 394154549
+test_access:
+  method: MAX account with signed mini-app initData
+  instructions: >-
+    Open the bound mini app from the bot in MAX. The first request registers
+    the MAX account. Create a test team as manager, then create a one-use
+    invitation for employee or manager. Use a second MAX account to accept it.
+    A targeted invitation requires that account's MAX ID (bot command /id).
+  bot_only_before_binding: >-
+    Send /create TeamName to the bot, then /invite TEAM_ID employee TARGET_MAX_ID.
+    The target joins with /join CODE. Use /teams to see roles.
+test_data:
+  type: synthetic
+  description: Demo documents are available only in isolated local DEMO_MODE.
+health_check: /api/health

@@ -1,0 +1,751 @@
+openapi: 3.1.0
+info:
+  title: Docspace API
+  version: 0.4.0
+  description: Команды, каналы и согласование документов в мини-приложении MAX. В режиме MAX каждый защищённый запрос передаёт подписанные стартовые данные в X-Max-Init-Data. MAX ID определяет аккаунт; сервер сохраняет профиль при первом запросе, а права берёт из членства в команде.
+servers:
+  - url: https://max-213-108-21-198.sslip.io:8443
+    description: Рабочий сервер; MAX-вход требует привязки мини-приложения.
+  - url: http://127.0.0.1:8080
+    description: Локальный запуск.
+security:
+  - MaxInitData: []
+tags:
+  - name: Teams
+  - name: Channels
+  - name: Documents
+  - name: Integrations
+paths:
+  /api/health:
+    get:
+      operationId: health
+      security: []
+      summary: Проверка доступности
+      responses:
+        '200':
+          description: Сервер доступен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {ok: {type: boolean}}
+  /api/teams/{teamId}/integrations:
+    parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema: {type: string}
+    get:
+      tags: [Integrations]
+      operationId: listIntegrations
+      summary: List integration keys for a team manager (without secrets)
+      responses:
+        '200': {description: Key metadata}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      tags: [Integrations]
+      operationId: createIntegration
+      summary: Create a team-scoped integration key; plaintext token is returned only once
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, provider]
+              properties:
+                name: {type: string, maxLength: 50}
+                provider: {type: string, enum: [1c, bitrix24, amocrm, other]}
+      responses:
+        '201': {description: Key metadata and one-time plaintext token}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/teams/{teamId}/integrations/{keyId}:
+    delete:
+      tags: [Integrations]
+      operationId: revokeIntegration
+      summary: Revoke a team integration key
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema: {type: string}
+        - name: keyId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: Revoked}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/integrations/channels:
+    get:
+      tags: [Integrations]
+      operationId: integrationChannels
+      summary: Каналы команды ключа интеграции
+      security:
+        - IntegrationBearer: []
+      responses:
+        '200': {description: Каналы команды}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/integrations/documents:
+    get:
+      tags: [Integrations]
+      operationId: integrationDocumentStatus
+      summary: Карточка и решение по отчёту, отправленному этим ключом
+      security:
+        - IntegrationBearer: []
+      parameters:
+        - name: externalId
+          in: query
+          required: true
+          schema: {type: string, maxLength: 180}
+      responses:
+        '200':
+          description: Актуальная карточка с решением и замечаниями
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Document'}
+        '401': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+    post:
+      tags: [Integrations]
+      operationId: importDocument
+      summary: Import raw file bytes into a channel of the key's team
+      security:
+        - IntegrationBearer: []
+      parameters:
+        - name: channelId
+          in: query
+          required: true
+          schema: {type: string}
+        - name: title
+          in: query
+          required: true
+          schema: {type: string, maxLength: 180}
+        - name: filename
+          in: query
+          required: true
+          schema: {type: string}
+        - name: externalId
+          in: query
+          schema: {type: string, maxLength: 180}
+        - name: review
+          in: query
+          schema: {type: string, enum: ['1']}
+        - name: due
+          in: query
+          schema: {type: string, format: date}
+        - name: description
+          in: query
+          schema: {type: string, maxLength: 2000}
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: {type: string, format: binary}
+      responses:
+        '201': {description: Imported document}
+        '200': {description: Existing document for duplicate externalId}
+        '401': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/demo/integrations/sample:
+    post:
+      tags: [Integrations]
+      operationId: createDemoIntegrationSample
+      summary: В деморежиме создать пример входящего документа из 1С или CRM
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channelId, provider]
+              properties:
+                channelId: {type: string}
+                provider: {type: string, enum: [1c, bitrix24, amocrm]}
+      responses:
+        '201': {description: Новый документ на согласовании}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/escalate:
+    post:
+      tags: [Documents]
+      operationId: escalateDocument
+      summary: Передать согласованный документ в канал родительской команды
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channelId]
+              properties:
+                channelId: {type: string, description: Канал родительской команды}
+      responses:
+        '201': {description: Отдельный документ на согласовании у руководства}
+        '200': {description: Этот исходный вариант уже передан}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/state:
+    get:
+      operationId: state
+      summary: Видимые пользователю команды, каналы, документы и сообщения
+      responses:
+        '200':
+          description: Состояние рабочего пространства с фильтрацией по участию в командах
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/State'}
+        '401': {$ref: '#/components/responses/Error'}
+  /api/teams:
+    post:
+      tags: [Teams]
+      operationId: createTeam
+      summary: Создать команду и канал «общее»
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: {type: string, maxLength: 40}
+                description: {type: string, maxLength: 200}
+                color: {type: string, enum: [violet, blue, green, coral]}
+                parentTeamId: {type: string, description: Родительская команда, участником которой является создатель}
+      responses:
+        '201':
+          description: Команда создана; пользователь — руководитель
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Team'}
+        '400': {$ref: '#/components/responses/Error'}
+  /api/teams/join:
+    post:
+      tags: [Teams]
+      operationId: joinTeam
+      summary: Вступить в команду по приглашению
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code: {type: string}
+      responses:
+        '200':
+          description: Пользователь принят в команду
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Team'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/invites/{code}:
+    get:
+      tags: [Teams]
+      operationId: previewInvitation
+      summary: Проверить приглашение для текущего MAX-аккаунта
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Название команды, роль и срок
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [teamId, teamName, role, expires, alreadyMember]
+                properties:
+                  teamId: {type: string}
+                  teamName: {type: string}
+                  role: {type: string, enum: [manager, employee]}
+                  expires: {type: string, format: date-time}
+                  alreadyMember: {type: boolean}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/teams/{teamId}/invites:
+    post:
+      tags: [Teams]
+      operationId: createRoleInvitation
+      summary: Одноразовое приглашение с ролью; опционально только для указанного MAX ID
+      parameters:
+        - {$ref: '#/components/parameters/TeamId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role: {type: string, enum: [manager, employee]}
+                targetUserId: {type: string, description: MAX ID адресата; пустое значение разрешает любому обладателю кода}
+      responses:
+        '201':
+          description: Приглашение на семь дней
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Invitation'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/teams/{teamId}/invites/{inviteId}:
+    delete:
+      tags: [Teams]
+      operationId: revokeInvitation
+      summary: Отозвать ещё не использованное приглашение
+      parameters:
+        - {$ref: '#/components/parameters/TeamId'}
+        - name: inviteId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Приглашение отозвано
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Invitation'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/teams/{teamId}/invite:
+    post:
+      tags: [Teams]
+      operationId: rotateInvitation
+      summary: Выпустить новый код на 7 дней; прежний сразу перестаёт действовать
+      parameters:
+        - {$ref: '#/components/parameters/TeamId'}
+      responses:
+        '200':
+          description: Новый код приглашения
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Team'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/teams/{teamId}/members/{userId}:
+    patch:
+      tags: [Teams]
+      operationId: setTeamRole
+      summary: Изменить роль участника
+      parameters:
+        - {$ref: '#/components/parameters/TeamId'}
+        - name: userId
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role: {type: string, enum: [manager, employee]}
+      responses:
+        '200':
+          description: Роль изменена
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Team'}
+        '403': {$ref: '#/components/responses/Error'}
+    delete:
+      tags: [Teams]
+      operationId: removeTeamMember
+      summary: Исключить участника и отозвать доступ к документам команды
+      parameters:
+        - {$ref: '#/components/parameters/TeamId'}
+        - name: userId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Участник исключён
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Team'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/channels:
+    post:
+      tags: [Channels]
+      operationId: createChannel
+      summary: Создать канал в команде
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [teamId, name]
+              properties:
+                teamId: {type: string}
+                name: {type: string, maxLength: 50}
+                description: {type: string}
+      responses:
+        '201':
+          description: Канал создан
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Channel'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/channels/{channelId}/messages:
+    post:
+      tags: [Channels]
+      operationId: postChannelMessage
+      summary: Написать в чат канала
+      parameters:
+        - {$ref: '#/components/parameters/ChannelId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: {type: string, maxLength: 4000}
+      responses:
+        '201':
+          description: Сообщение сохранено
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ChannelMessage'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/documents:
+    post:
+      tags: [Documents]
+      operationId: uploadDocument
+      summary: Загрузить документ в канал
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, title, channelId]
+              properties:
+                file: {type: string, format: binary}
+                title: {type: string, maxLength: 180}
+                channelId: {type: string}
+                sourceSystem: {type: string, enum: [1c, bitrix24, amocrm, other]}
+                review: {type: string, enum: ['0', '1']}
+                description: {type: string}
+                due: {type: string, format: date}
+      responses:
+        '201':
+          description: Документ и первая версия сохранены
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Document'}
+        '400': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/versions:
+    post:
+      tags: [Documents]
+      operationId: uploadVersion
+      summary: Загрузить новую версию и вернуть документ в черновики
+      parameters:
+        - {$ref: '#/components/parameters/DocumentId'}
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {type: string, format: binary}
+      responses:
+        '201':
+          description: Новая версия
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Document'}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/files/{versionId}:
+    get:
+      tags: [Documents]
+      operationId: downloadVersion
+      summary: Скачать или просмотреть файл после проверки доступа к команде
+      parameters:
+        - {$ref: '#/components/parameters/DocumentId'}
+        - name: versionId
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Содержимое файла
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/files/{versionId}/preview:
+    get:
+      tags: [Documents]
+      operationId: previewVersion
+      summary: Просмотреть содержимое DOCX, XLSX или CSV в карточке
+      description: Ответ содержит структурированные абзацы или строки таблицы. Предпросмотр ограничен по объёму; исходный файл доступен отдельно.
+      parameters:
+        - {$ref: '#/components/parameters/DocumentId'}
+        - {$ref: '#/components/parameters/VersionId'}
+      responses:
+        '200':
+          description: Безопасное структурированное представление файла
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [kind]
+                properties:
+                  kind: {type: string, enum: [document, spreadsheet]}
+                  blocks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kind: {type: string, enum: [heading, paragraph, table]}
+                        text: {type: string}
+                        rows: {type: array, items: {type: array, items: {type: string}}}
+                  sheets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name: {type: string}
+                        rows: {type: array, items: {type: array, items: {type: string}}}
+                  truncated: {type: boolean}
+        '404': {$ref: '#/components/responses/Error'}
+        '422': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/comments:
+    post:
+      tags: [Documents]
+      operationId: commentDocument
+      summary: Добавить комментарий к документу
+      parameters:
+        - {$ref: '#/components/parameters/DocumentId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: {type: string, maxLength: 4000}
+      responses:
+        '201':
+          description: Обновлённый документ
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Document'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/status:
+    patch:
+      tags: [Documents]
+      operationId: changeStatus
+      summary: Отправить, согласовать или вернуть на доработку
+      parameters:
+        - {$ref: '#/components/parameters/DocumentId'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status, revision]
+              properties:
+                status: {type: string, enum: [review, approved, changes]}
+                revision: {type: integer, minimum: 1}
+                reason: {type: string, maxLength: 4000, description: Обязательно при возврате на доработку}
+      responses:
+        '200':
+          description: Обновлённый документ и запись в истории
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Document'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/documents/{documentId}/files/{versionId}/download-link:
+    post:
+      tags: [Documents]
+      operationId: createDownloadLink
+      summary: Short-lived file URL for MAX Bridge
+      description: Requires signed MAX initData (or demo identity). The URL expires after three minutes and remains team-scoped.
+      parameters:
+        - {$ref: '#/components/parameters/DocumentId'}
+        - {$ref: '#/components/parameters/VersionId'}
+      responses:
+        '201':
+          description: Temporary relative URL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [url]
+                properties:
+                  url: {type: string}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/download/{ticket}:
+    get:
+      tags: [Documents]
+      operationId: downloadWithTicket
+      security: []
+      summary: Download file via temporary team-scoped ticket
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: File bytes
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+        '404': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    IntegrationBearer:
+      type: http
+      scheme: bearer
+      description: Team-scoped key returned once to a manager
+    MaxInitData:
+      type: apiKey
+      in: header
+      name: X-Max-Init-Data
+      description: Подписанная строка WebApp.initData. В DEMO_MODE=true используется X-Demo-User (только на локальном тестовом сервере).
+  parameters:
+    TeamId:
+      name: teamId
+      in: path
+      required: true
+      schema: {type: string}
+    ChannelId:
+      name: channelId
+      in: path
+      required: true
+      schema: {type: string}
+    VersionId:
+      name: versionId
+      in: path
+      required: true
+      schema: {type: string}
+    DocumentId:
+      name: documentId
+      in: path
+      required: true
+      schema: {type: string}
+  responses:
+    Error:
+      description: Ошибка
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: {type: string}
+  schemas:
+    User:
+      type: object
+      required: [id, name, role]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        role: {type: string, enum: [manager, employee]}
+    Invitation:
+      type: object
+      required: [id, code, role, createdBy, created, expires]
+      properties:
+        id: {type: string}
+        code: {type: string, description: Секретный код; обычные приглашения одноразовые, специальные коды жюри многоразовые}
+        role: {type: string, enum: [manager, employee]}
+        targetUserId: {type: string, description: Ограничение по MAX ID}
+        createdBy: {type: string}
+        created: {type: string, format: date-time}
+        expires: {type: string, format: date-time}
+        maxUses: {type: integer, description: Лимит специальных многоразовых кодов; 0 или отсутствие означает одноразовый код}
+        useCount: {type: integer}
+        workspaceTeamIds: {type: array, items: {type: string}, description: Команды отдельной тестовой компании; задаются только при подготовке данных}
+        usedBy: {type: string}
+        usedAt: {type: string, format: date-time}
+        revokedAt: {type: string, format: date-time}
+    Team:
+      type: object
+      required: [id, name, color, members]
+      properties:
+        id: {type: string}
+        reviewUntil: {type: string, format: date-time, description: Срок доступа к отдельной тестовой команде}
+        parentTeamId: {type: string}
+        name: {type: string}
+        description: {type: string}
+        color: {type: string}
+        members: {type: array, items: {$ref: '#/components/schemas/User'}}
+        invites: {type: array, description: Видно только руководителям, items: {$ref: '#/components/schemas/Invitation'}}
+        inviteCode: {type: string, description: Доступно только руководителю}
+        inviteExpires: {type: string, format: date-time}
+    Channel:
+      type: object
+      required: [id, teamId, name]
+      properties:
+        id: {type: string}
+        teamId: {type: string}
+        name: {type: string}
+        description: {type: string}
+        color: {type: string}
+    ChannelMessage:
+      type: object
+      required: [id, channelId, author, text, created]
+      properties:
+        id: {type: string}
+        channelId: {type: string}
+        author: {$ref: '#/components/schemas/User'}
+        text: {type: string}
+        created: {type: string, format: date-time}
+    Version:
+      type: object
+      properties:
+        id: {type: string}
+        name: {type: string}
+        mime: {type: string}
+        size: {type: integer}
+        created: {type: string, format: date-time}
+        author: {type: string}
+    Document:
+      type: object
+      properties:
+        id: {type: string}
+        title: {type: string}
+        channelId: {type: string}
+        owner: {$ref: '#/components/schemas/User'}
+        status: {type: string, enum: [draft, review, changes, approved]}
+        due: {type: string}
+        description: {type: string}
+        created: {type: string, format: date-time}
+        updated: {type: string, format: date-time}
+        versions: {type: array, items: {$ref: '#/components/schemas/Version'}}
+        comments: {type: array, items: {type: object}}
+        revision: {type: integer}
+        sourceSystem: {type: string}
+        importMethod: {type: string, enum: [api, file, demo]}
+        externalId: {type: string}
+        integrationId: {type: string}
+        escalatedFrom: {type: string}
+        escalatedRevision: {type: integer}
+    State:
+      type: object
+      properties:
+        user: {$ref: '#/components/schemas/User'}
+        demo: {type: boolean}
+        teams: {type: array, items: {$ref: '#/components/schemas/Team'}}
+        orgChart: {type: array, description: Visible organization tree without document access, items: {type: object}}
+        channels: {type: array, items: {$ref: '#/components/schemas/Channel'}}
+        documents: {type: array, items: {$ref: '#/components/schemas/Document'}}
+        messages: {type: array, items: {$ref: '#/components/schemas/ChannelMessage'}}
+

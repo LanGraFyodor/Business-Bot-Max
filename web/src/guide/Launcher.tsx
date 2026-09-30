@@ -1,0 +1,3 @@
+﻿import {ArrowRight,BookOpen,Files} from 'lucide-react';
+import './guide.css';
+export default function Launcher(){return <main className="guide-launcher"><section><span className="guide-kicker">ХАКАТОН MAX 68</span><h1>Два инструмента.<br/>Один бизнес-бот.</h1><p>Выберите приложение для своей задачи.</p><a href={'/documents'+location.hash}><Files size={30}/><span><strong>Docspace</strong><small>Документы, команды и согласование</small></span><ArrowRight size={20}/></a><a href={'/guide'+location.hash}><BookOpen size={30}/><span><strong>Бизнес-навигатор</strong><small>Справочник и план запуска своего дела</small></span><ArrowRight size={20}/></a><p style={{fontSize:12}}>В боте эти приложения открываются двумя отдельными кнопками.</p></section></main>}

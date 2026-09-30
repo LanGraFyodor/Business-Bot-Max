@@ -1,0 +1,46 @@
+name: maxbusiness
+services:
+  docspace:
+    image: max-business:20260930
+    pull_policy: never
+    network_mode: host
+    user: "1000:1000"
+    environment:
+      DEMO_MODE: "false"
+      DATA_DIR: /app/data/live
+      LISTEN_ADDR: 127.0.0.1:18080
+      BOT_MODE: polling
+      MAX_BOT_TOKEN: ${MAX_BOT_TOKEN:?Set MAX_BOT_TOKEN in private .env}
+      MAX_API_URL: https://platform-api2.max.ru
+      MAX_CA_FILE: certs/russian_trusted_root_ca.crt
+      PUBLIC_APP_URL: https://max-213-108-21-198.sslip.io:8443/apps
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.50
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:18080/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  https:
+    image: caddy:2.10.2-alpine
+    network_mode: host
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.25
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+volumes:
+  caddy_data:
+  caddy_config:
+

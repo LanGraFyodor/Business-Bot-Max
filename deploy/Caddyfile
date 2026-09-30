@@ -1,0 +1,17 @@
+{
+ admin 127.0.0.1:12019
+ auto_https disable_redirects
+ servers {
+  protocols h1 h2
+ }
+}
+https://max-213-108-21-198.sslip.io:8443 {
+ tls {
+  issuer acme {
+   disable_tlsalpn_challenge
+  }
+ }
+ encode zstd gzip
+ reverse_proxy 127.0.0.1:18080
+}
+
