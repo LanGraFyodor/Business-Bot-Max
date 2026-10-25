@@ -13,3 +13,7 @@ artifacts/
 .env.*
 !.env.example
 output/
+.agents/
+__pycache__/
+*.py[cod]
+.pytest_cache/

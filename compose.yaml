@@ -1,4 +1,4 @@
-﻿services:
+services:
   docspace:
     build: .
     ports:
@@ -16,6 +16,19 @@
       MAX_API_URL: ${MAX_API_URL:-https://platform-api2.max.ru}
     volumes:
       - docspace_data:/app/data
+    restart: unless-stopped
+  accounting_qa:
+    build:
+      context: ./services/accounting_qa
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:${ACCOUNTING_QA_PORT:-8081}:8081"
+    environment:
+      DOCSPACE_API_URL: http://docspace:8080
+      DOCSPACE_TEST_INTEGRATION_TOKEN: ${DOCSPACE_TEST_INTEGRATION_TOKEN:-}
+      ACCOUNTING_QA_PORT: 8081
+    depends_on:
+      - docspace
     restart: unless-stopped
   reference_db:
     profiles: [reference-data]
