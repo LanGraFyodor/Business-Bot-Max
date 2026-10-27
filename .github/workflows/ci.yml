@@ -40,5 +40,7 @@ jobs:
           docker compose config
 
       - name: Validate Server Compose Configuration
+        env:
+          MAX_BOT_TOKEN: mock_ci_token
         run: |
           docker compose -f deploy/compose.server.yaml config
