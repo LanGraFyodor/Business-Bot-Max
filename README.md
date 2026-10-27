@@ -1,5 +1,7 @@
 # MAX Бизнес — два рабочих инструмента в одном боте
 
+[![CI Pipeline](https://github.com/LanGraFyodor/Business-Bot-Max/actions/workflows/ci.yml/badge.svg)](https://github.com/LanGraFyodor/Business-Bot-Max/actions/workflows/ci.yml)
+
 > **ПРОВЕРЯЮЩИМ — НАЧАТЬ ЗДЕСЬ**
 >
 > **[КОДЫ РУКОВОДИТЕЛЯ И СОТРУДНИКА + ССЫЛКИ ДЛЯ ВСТУПЛЕНИЯ](docs/REVIEWER-ACCESS.md)**
