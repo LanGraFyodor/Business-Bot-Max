@@ -1,0 +1,44 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  go-test:
+    name: Go Tests & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Run Unit Tests
+        run: |
+          go test -v ./internal/...
+
+      - name: Build Go Binary
+        run: |
+          CGO_ENABLED=0 go build -v -o ./bin/docspace ./cmd/docspace
+
+  compose-validate:
+    name: Docker & Compose Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Local Compose Configuration
+        run: |
+          docker compose config
+
+      - name: Validate Server Compose Configuration
+        run: |
+          docker compose -f deploy/compose.server.yaml config
